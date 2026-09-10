@@ -81,8 +81,19 @@
             transform: translateY(0);
         }
 
-        .hidden {
-            display: none;
+        .btn-back {
+            background: transparent;
+            color: #b0a4a8;
+            border: 2px dashed #e8d7dc;
+            box-shadow: none;
+            margin-top: 8px;
+        }
+
+        .btn-back:hover {
+            background: #fff8f9;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: none;
         }
 
         .heart {
@@ -115,9 +126,7 @@
 
     <div class="container" id="app">
         <div class="heart">💌</div>
-        <div id="step-container">
-            <!-- Шаги будут подгружаться через JS -->
-        </div>
+        <div id="step-container"></div>
     </div>
 
     <script>
@@ -130,7 +139,7 @@
                 ]
             },
             {
-                title: "Шаг 1: Куда отправимся?",
+                title: "Куда отправимся?",
                 text: "Выбери атмосферу, которая тебе ближе всего:",
                 options: [
                     { text: "☕ Уютная кофейня с вкусными десертами", answer: "Локация: Уютная кофейня 🍰", next: 2 },
@@ -139,7 +148,7 @@
                 ]
             },
             {
-                title: "Шаг 2: Что на счет угощений?",
+                title: "Что насчет угощений?",
                 text: "Тут тоже можно капризничать:",
                 options: [
                     { text: "🍷 Кофе, чай или бокал чего-то вкусного", answer: "Напитки: Вкусные напитки ☕", next: 3 },
@@ -147,7 +156,7 @@
                 ]
             },
             {
-                title: "Шаг 3: Когда тебе удобнее?",
+                title: "Когда тебе удобнее?",
                 text: "Выбери день, когда ты свободна:",
                 options: [
                     { text: "🗓️ В эту пятницу вечером", answer: "День: Пятница вечер ✨", next: 4 },
@@ -184,9 +193,15 @@
             }
 
             html += `<div class="options">`;
-            step.options.forEach((opt, index) => {
+            step.options.forEach((opt) => {
                 html += `<button class="btn" onclick="handleChoice(${opt.next}, '${opt.answer || ''}')">${opt.text}</button>`;
             });
+
+            // Кнопка «Назад» появляется везде, кроме первого шага
+            if (currentStep > 0 && currentStep < 5) {
+                html += `<button class="btn btn-back" onclick="handleBack()">Назад ⬅️</button>`;
+            }
+
             html += `</div>`;
 
             container.innerHTML = html;
@@ -198,7 +213,6 @@
             }
             
             if (nextStep === 5) {
-                // Финальный экран после нажатия «Сдаться и пойти»
                 document.getElementById('app').innerHTML = `
                     <div class="heart">💖</div>
                     <h2>Ура! Жду не дождусь!</h2>
@@ -212,7 +226,17 @@
             renderStep();
         }
 
-        // Запуск при загрузке
+        function handleBack() {
+            if (currentStep > 0) {
+                currentStep--;
+                // Удаляем последний выбор из массива ответов, чтобы они не двоились
+                if (userChoices.length > 0) {
+                    userChoices.pop();
+                }
+                renderStep();
+            }
+        }
+
         renderStep();
     </script>
 </body>
