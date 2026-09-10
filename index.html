@@ -38,10 +38,36 @@
             text-align: center;
             box-sizing: border-box;
             transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .btn-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #fff5f7;
+            color: var(--primary-color);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .btn-back:hover {
+            background: #ffe3e8;
+            transform: scale(1.05);
         }
 
         h2 {
             font-size: 24px;
+            margin-top: 10px;
             margin-bottom: 20px;
             color: var(--primary-color);
         }
@@ -81,24 +107,9 @@
             transform: translateY(0);
         }
 
-        .btn-back {
-            background: transparent;
-            color: #b0a4a8;
-            border: 2px dashed #e8d7dc;
-            box-shadow: none;
-            margin-top: 8px;
-        }
-
-        .btn-back:hover {
-            background: #fff8f9;
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-            box-shadow: none;
-        }
-
         .heart {
             font-size: 50px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             animation: pulse 1.5s infinite;
         }
 
@@ -125,7 +136,6 @@
 <body>
 
     <div class="container" id="app">
-        <div class="heart">💌</div>
         <div id="step-container"></div>
     </div>
 
@@ -181,7 +191,15 @@
             const container = document.getElementById('step-container');
             const step = steps[currentStep];
 
-            let html = `<h2>${step.title}</h2><p>${step.text}</p>`;
+            let html = '';
+
+            // Кнопка «Назад» в левом верхнем углу (появляется со 2-го шага)
+            if (currentStep > 0 && currentStep < 5) {
+                html += `<button class="btn-back" onclick="handleBack()" title="Назад">←</button>`;
+            }
+
+            html += `<div class="heart">💌</div>`;
+            html += `<h2>${step.title}</h2><p>${step.text}</p>`;
 
             if (step.isFinal) {
                 html += `<div class="result-box">
@@ -196,12 +214,6 @@
             step.options.forEach((opt) => {
                 html += `<button class="btn" onclick="handleChoice(${opt.next}, '${opt.answer || ''}')">${opt.text}</button>`;
             });
-
-            // Кнопка «Назад» появляется везде, кроме первого шага
-            if (currentStep > 0 && currentStep < 5) {
-                html += `<button class="btn btn-back" onclick="handleBack()">Назад ⬅️</button>`;
-            }
-
             html += `</div>`;
 
             container.innerHTML = html;
@@ -229,7 +241,6 @@
         function handleBack() {
             if (currentStep > 0) {
                 currentStep--;
-                // Удаляем последний выбор из массива ответов, чтобы они не двоились
                 if (userChoices.length > 0) {
                     userChoices.pop();
                 }
