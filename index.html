@@ -15,7 +15,7 @@
         body {
             margin: 0;
             padding: 0;
-            /* Твоя фоновая картинка. Если файл называется иначе, поменяй 'bg.jpg' на свое название */
+            /* Замени 'bg.jpg' на точное имя твоего файла с фоном (можно .png или .jpg) */
             background-image: url('png.png');
             background-size: cover;
             background-position: center;
@@ -32,7 +32,6 @@
         }
 
         .container {
-            /* Полупрозрачный белый фон карточки, чтобы текст читался поверх фото */
             background-color: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(8px);
             width: 90%;
@@ -148,59 +147,65 @@
     <script>
         const steps = [
             {
+                id: 0,
                 title: "Привет! У меня есть к тебе один важный вопрос...",
                 text: "Но сначала нужно пройти небольшой секретный тест, чтобы настроиться на нужный лад ✨",
                 options: [
-                    { text: "Давай начнем! 🌸", next: 1 }
+                    { text: "Давай начнем! 🌸", target: 1 }
                 ]
             },
             {
+                id: 1,
                 title: "Куда отправимся?",
                 text: "Выбери атмосферу, которая тебе ближе всего:",
                 options: [
-                    { text: "☕ Уютная кофейня с вкусными десертами", answer: "Локация: Уютная кофейня 🍰", next: 2 },
-                    { text: "🌿 Прогулка по красивому парку", answer: "Локация: Прогулка в парке 🌳", next: 2 },
-                    { text: "✨ Маленькое спонтанное приключение", answer: "Локация: Секретный план 🌙", next: 2 }
+                    { text: "☕ Уютная кофейня с вкусными десертами", answer: "Локация: Уютная кофейня 🍰", target: 2 },
+                    { text: "🌿 Прогулка по красивому парку", answer: "Локация: Прогулка в парке 🌳", target: 2 },
+                    { text: "✨ Маленькое спонтанное приключение", answer: "Локация: Секретный план 🌙", target: 2 }
                 ]
             },
             {
+                id: 2,
                 title: "Что насчет угощений?",
                 text: "Тут тоже можно капризничать:",
                 options: [
-                    { text: "🍷 Кофе, чай или бокал чего-то вкусного", answer: "Напитки: Вкусные напитки ☕", next: 3 },
-                    { text: "🍕 Снеки, пицца или вкусняшки", answer: "Вкусняшки: Обязательно будут 🍕", next: 3 }
+                    { text: "🍷 Кофе, чай или бокал чего-то вкусного", answer: "Напитки: Вкусные напитки ☕", target: 3 },
+                    { text: "🍕 Снеки, пицца или вкусняшки", answer: "Вкусняшки: Обязательно будут 🍕", target: 3 }
                 ]
             },
             {
+                id: 3,
                 title: "Когда тебе удобнее?",
                 text: "Выбери день, когда ты свободна:",
                 options: [
-                    { text: "🗓️ В эту пятницу вечером", answer: "День: Пятница вечер ✨", next: 4 },
-                    { text: "🗓️ В субботу", answer: "День: Суббота ☀️", next: 4 },
-                    { text: "🗓️ В воскресенье", answer: "День: Воскресенье 🌷", next: 4 }
+                    { text: "🗓️ В эту пятницу вечером", answer: "День: Пятница вечер ✨", target: 4 },
+                    { text: "🗓️ В субботу", answer: "День: Суббота ☀️", target: 4 },
+                    { text: "🗓️ В воскресенье", answer: "День: Воскресенье 🌷", target: 4 }
                 ]
             },
             {
+                id: 4,
                 title: "Идеально! 🎉",
                 text: "Все ответы записаны. Осталось только подтвердить бронь на самое лучшее свидание:",
                 isFinal: true,
                 options: [
-                    { text: "Сдаться и пойти ❤️", next: 5 }
+                    { text: "Сдаться и пойти ❤️", target: 5 }
                 ]
             }
         ];
 
-        let currentStep = 0;
-        let userChoices = [];
+        let currentStepId = 0;
+        // Храним ответы по индексам шагов: { 1: "ответ", 2: "ответ", 3: "ответ" }
+        let userChoices = {};
 
         function renderStep() {
             const container = document.getElementById('step-container');
-            const step = steps[currentStep];
+            const step = steps.find(s => s.id === currentStepId);
 
             let html = '';
 
-            // Кнопка «Назад» в левом верхнем углу (появляется со 2-го шага)
-            if (currentStep > 0 && currentStep < 5) {
+            // Кнопка «Назад» показывается на шагах от 1 до 4
+            if (currentStepId > 0 && currentStepId < 5) {
                 html += `<button class="btn-back" onclick="handleBack()" title="Назад">←</button>`;
             }
 
@@ -210,27 +215,27 @@
             if (step.isFinal) {
                 html += `<div class="result-box">
                     <p><b>Твой выбор:</b></p>
-                    <p>• ${userChoices[0] || 'Уютное место'}</p>
-                    <p>• ${userChoices[1] || 'Вкусности'}</p>
-                    <p>• ${userChoices[2] || 'Выходной день'}</p>
+                    <p>• ${userChoices[1] || 'Уютное место'}</p>
+                    <p>• ${userChoices[2] || 'Вкусности'}</p>
+                    <p>• ${userChoices[3] || 'Выходной день'}</p>
                 </div><br>`;
             }
 
             html += `<div class="options">`;
             step.options.forEach((opt) => {
-                html += `<button class="btn" onclick="handleChoice(${opt.next}, '${opt.answer || ''}')">${opt.text}</button>`;
+                html += `<button class="btn" onclick="handleChoice(${opt.target}, '${opt.answer || ''}')">${opt.text}</button>`;
             });
             html += `</div>`;
 
             container.innerHTML = html;
         }
 
-        function handleChoice(nextStep, answer) {
-            if (answer) {
-                userChoices.push(answer);
+        function handleChoice(targetStep, answer) {
+            if (answer && currentStepId > 0) {
+                userChoices[currentStepId] = answer;
             }
             
-            if (nextStep === 5) {
+            if (targetStep === 5) {
                 document.getElementById('app').innerHTML = `
                     <div class="heart">💖</div>
                     <h2>Ура! Жду не дождусь!</h2>
@@ -240,19 +245,17 @@
                 return;
             }
 
-            currentStep = nextStep;
+            currentStepId = targetStep;
             renderStep();
         }
 
         function handleBack() {
-            if (currentStep > 0) {
-                currentStep--;
-                // Удаляем последний записанный ответ при возврате назад
-                if (userChoices.length > currentStep) {
-                    userChoices.pop();
-                }
-                renderStep();
+            if (currentStepId === 1) {
+                currentStepId = 0;
+            } else if (currentStepId > 1) {
+                currentStepId--;
             }
+            renderStep();
         }
 
         renderStep();
