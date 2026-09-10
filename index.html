@@ -7,18 +7,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #fff0f3;
-            --card-bg: #ffffff;
             --primary-color: #ff758c;
             --secondary-color: #ff7eb3;
             --text-color: #594a4e;
-            --accent-color: #ffb199;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
+            /* Твоя фоновая картинка. Если файл называется иначе, поменяй 'bg.jpg' на свое название */
+            background-image: url('png.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            
             font-family: 'Quicksand', sans-serif;
             color: var(--text-color);
             display: flex;
@@ -29,12 +32,14 @@
         }
 
         .container {
-            background-color: var(--card-bg);
+            /* Полупрозрачный белый фон карточки, чтобы текст читался поверх фото */
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
             width: 90%;
             max-width: 420px;
             padding: 30px;
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(255, 117, 140, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             text-align: center;
             box-sizing: border-box;
             transition: all 0.4s ease;
@@ -58,6 +63,7 @@
             justify-content: center;
             align-items: center;
             transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 2px 8px rgba(255, 117, 140, 0.2);
         }
 
         .btn-back:hover {
@@ -229,7 +235,7 @@
                     <div class="heart">💖</div>
                     <h2>Ура! Жду не дождусь!</h2>
                     <p>Скриншот этого экрана можно прислать мне в личку, чтобы зафиксировать бронь 💌</p>
-                    <p style="font-size: 14px; color: #888; margin-top: 20px;">(Обещаю сделать этот вечер особенным)</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 20px;">(Обещаю сделать этот вечер особенным)</p>
                 `;
                 return;
             }
@@ -241,7 +247,8 @@
         function handleBack() {
             if (currentStep > 0) {
                 currentStep--;
-                if (userChoices.length > 0) {
+                // Удаляем последний записанный ответ при возврате назад
+                if (userChoices.length > currentStep) {
                     userChoices.pop();
                 }
                 renderStep();
