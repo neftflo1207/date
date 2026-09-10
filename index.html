@@ -15,7 +15,7 @@
         body {
             margin: 0;
             padding: 0;
-            /* Замени 'bg.jpg' на точное имя твоего файла с фоном (можно .png или .jpg) */
+            /* Твоя картинка фона */
             background-image: url('png.png');
             background-size: cover;
             background-position: center;
@@ -63,6 +63,7 @@
             align-items: center;
             transition: background 0.2s, transform 0.2s;
             box-shadow: 0 2px 8px rgba(255, 117, 140, 0.2);
+            z-index: 10;
         }
 
         .btn-back:hover {
@@ -195,7 +196,8 @@
         ];
 
         let currentStepId = 0;
-        // Храним ответы по индексам шагов: { 1: "ответ", 2: "ответ", 3: "ответ" }
+        // История посещенных шагов для корректной работы кнопки «Назад»
+        let historyStack = [];
         let userChoices = {};
 
         function renderStep() {
@@ -204,8 +206,8 @@
 
             let html = '';
 
-            // Кнопка «Назад» показывается на шагах от 1 до 4
-            if (currentStepId > 0 && currentStepId < 5) {
+            // Кнопка «Назад» показывается, если в истории есть шаги
+            if (historyStack.length > 0) {
                 html += `<button class="btn-back" onclick="handleBack()" title="Назад">←</button>`;
             }
 
@@ -245,17 +247,18 @@
                 return;
             }
 
+            // Запоминаем текущий шаг в историю перед переходом вперед
+            historyStack.push(currentStepId);
             currentStepId = targetStep;
             renderStep();
         }
 
         function handleBack() {
-            if (currentStepId === 1) {
-                currentStepId = 0;
-            } else if (currentStepId > 1) {
-                currentStepId--;
+            if (historyStack.length > 0) {
+                // Достаем последний сохраненный шаг из истории
+                currentStepId = historyStack.pop();
+                renderStep();
             }
-            renderStep();
         }
 
         renderStep();
