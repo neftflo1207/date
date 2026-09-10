@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Маленький опрос для особенного человека 💕</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fff0f3;
+            --card-bg: #ffffff;
+            --primary-color: #ff758c;
+            --secondary-color: #ff7eb3;
+            --text-color: #594a4e;
+            --accent-color: #ffb199;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Quicksand', sans-serif;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            width: 90%;
+            max-width: 420px;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(255, 117, 140, 0.15);
+            text-align: center;
+            box-sizing: border-box;
+            transition: all 0.4s ease;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 117, 140, 0.3);
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 117, 140, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .heart {
+            font-size: 50px;
+            margin-bottom: 15px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .result-box {
+            background: #fff5f7;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .result-box p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="app">
+        <div class="heart">💌</div>
+        <div id="step-container">
+            <!-- Шаги будут подгружаться через JS -->
+        </div>
+    </div>
+
+    <script>
+        const steps = [
+            {
+                title: "Привет! У меня есть к тебе один важный вопрос...",
+                text: "Но сначала нужно пройти небольшой секретный тест, чтобы настроиться на нужный лад ✨",
+                options: [
+                    { text: "Давай начнем! 🌸", next: 1 }
+                ]
+            },
+            {
+                title: "Шаг 1: Куда отправимся?",
+                text: "Выбери атмосферу, которая тебе ближе всего:",
+                options: [
+                    { text: "☕ Уютная кофейня с вкусными десертами", answer: "Локация: Уютная кофейня 🍰", next: 2 },
+                    { text: "🌿 Прогулка по красивому парку", answer: "Локация: Прогулка в парке 🌳", next: 2 },
+                    { text: "✨ Маленькое спонтанное приключение", answer: "Локация: Секретный план 🌙", next: 2 }
+                ]
+            },
+            {
+                title: "Шаг 2: Что на счет угощений?",
+                text: "Тут тоже можно капризничать:",
+                options: [
+                    { text: "🍷 Кофе, чай или бокал чего-то вкусного", answer: "Напитки: Вкусные напитки ☕", next: 3 },
+                    { text: "🍕 Снеки, пицца или вкусняшки", answer: "Вкусняшки: Обязательно будут 🍕", next: 3 }
+                ]
+            },
+            {
+                title: "Шаг 3: Когда тебе удобнее?",
+                text: "Выбери день, когда ты свободна:",
+                options: [
+                    { text: "🗓️ В эту пятницу вечером", answer: "День: Пятница вечер ✨", next: 4 },
+                    { text: "🗓️ В субботу", answer: "День: Суббота ☀️", next: 4 },
+                    { text: "🗓️ В воскресенье", answer: "День: Воскресенье 🌷", next: 4 }
+                ]
+            },
+            {
+                title: "Идеально! 🎉",
+                text: "Все ответы записаны. Осталось только подтвердить бронь на самое лучшее свидание:",
+                isFinal: true,
+                options: [
+                    { text: "Сдаться и пойти ❤️", next: 5 }
+                ]
+            }
+        ];
+
+        let currentStep = 0;
+        let userChoices = [];
+
+        function renderStep() {
+            const container = document.getElementById('step-container');
+            const step = steps[currentStep];
+
+            let html = `<h2>${step.title}</h2><p>${step.text}</p>`;
+
+            if (step.isFinal) {
+                html += `<div class="result-box">
+                    <p><b>Твой выбор:</b></p>
+                    <p>• ${userChoices[0] || 'Уютное место'}</p>
+                    <p>• ${userChoices[1] || 'Вкусности'}</p>
+                    <p>• ${userChoices[2] || 'Выходной день'}</p>
+                </div><br>`;
+            }
+
+            html += `<div class="options">`;
+            step.options.forEach((opt, index) => {
+                html += `<button class="btn" onclick="handleChoice(${opt.next}, '${opt.answer || ''}')">${opt.text}</button>`;
+            });
+            html += `</div>`;
+
+            container.innerHTML = html;
+        }
+
+        function handleChoice(nextStep, answer) {
+            if (answer) {
+                userChoices.push(answer);
+            }
+            
+            if (nextStep === 5) {
+                // Финальный экран после нажатия «Сдаться и пойти»
+                document.getElementById('app').innerHTML = `
+                    <div class="heart">💖</div>
+                    <h2>Ура! Жду не дождусь!</h2>
+                    <p>Скриншот этого экрана можно прислать мне в личку, чтобы зафиксировать бронь 💌</p>
+                    <p style="font-size: 14px; color: #888; margin-top: 20px;">(Обещаю сделать этот вечер особенным)</p>
+                `;
+                return;
+            }
+
+            currentStep = nextStep;
+            renderStep();
+        }
+
+        // Запуск при загрузке
+        renderStep();
+    </script>
+</body>
+</html>
